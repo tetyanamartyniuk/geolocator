@@ -18,3 +18,16 @@ export type ScoredPlace = FoursquarePlace & {
 };
 
 export type ScoreCalculator = (value: any) => number;
+
+export type searchPlaceParams = {
+  ll: string;
+  sort?: string;
+  radius?: string;
+};
+
+export type inputParams = {
+  lat: string;
+  long: string;
+  sort?: string;
+  radius?: string;
+};

@@ -1,49 +1,39 @@
-import { fetchPlacesFromAPI } from "./api.js";
+import { searchPlaces } from "./api/services/endpoints.js";
 import { enrichWithMockData } from "./mocks.js";
-import { scoringStrategies, calculateLocationProbability } from "./scoring.js";
-import type { ScoredPlace } from "./types.js";
+import { findWinnerLocation } from "./services/locationService.js";
 
-async function determineLikelyLocation(lat: string, long: string) {
+import type {
+  FoursquarePlace,
+  inputParams,
+  ScoredPlace,
+  searchPlaceParams,
+} from "./types.js";
+
+//lat: string, long: string
+
+type FetchPlacesFunction = (params: inputParams) => Promise<FoursquarePlace[]>;
+
+async function getMostProbableLocation(
+  params: inputParams,
+  fetchData: FetchPlacesFunction,
+) {
   try {
-    const places = await fetchPlacesFromAPI(lat, long);
+    const rawPlaces = await fetchData(params);
 
-    if (places.length === 0) {
+    if (rawPlaces.length === 0) {
       console.log("No locations were found nearby.");
       return null;
     }
 
-    const MAX_DISTANCE_METERS = 500;
-    const nearbyPlaces = places.filter(
-      (place) => place.distance <= MAX_DISTANCE_METERS,
+    const enrichedPlaces = rawPlaces.map((rawPlace) =>
+      enrichWithMockData(rawPlace),
     );
 
-    if (nearbyPlaces.length === 0) {
-      console.log(`No commercial places found within ${MAX_DISTANCE_METERS}m.`);
-      return null;
-    }
-    const probablePlaces: ScoredPlace[] = places.map((place) => {
-      const enrichedPlace = enrichWithMockData(place);
-      const score = calculateLocationProbability(
-        scoringStrategies,
-        enrichedPlace,
-      );
-
-      return {
-        ...enrichedPlace,
-        probabilityScore: score,
-      };
-    });
-
-    probablePlaces.sort((a, b) => b.probabilityScore - a.probabilityScore);
-
-    const winner = probablePlaces[0];
-    console.log("Probable locations: ", probablePlaces);
-    console.log("Your probable location: ", winner);
-
-    return winner;
+    return findWinnerLocation(enrichedPlaces);
   } catch (error) {
     console.error(error);
+    return null;
   }
 }
 
-determineLikelyLocation("49.843949", "24.026219");
+getMostProbableLocation({ lat: "49.843949", long: "24.026219" }, searchPlaces);
