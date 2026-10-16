@@ -1,39 +1,16 @@
-import { searchPlaces } from "./api/services/endpoints.js";
-import { enrichWithMockData } from "./mocks.js";
-import { findWinnerLocation } from "./services/locationService.js";
+import foursquareEndpoints from "./api/foursquare/index.js";
+import { LocationSearch } from "./services/index.js";
+import { AppView } from "./view/AppView.js";
 
-import type {
-  FoursquarePlace,
-  inputParams,
-  ScoredPlace,
-  searchPlaceParams,
-} from "./types.js";
+const appContainer = document.getElementById("app");
+if (!appContainer) throw new Error("App element not found");
 
-//lat: string, long: string
+const locationSearch = new LocationSearch(foursquareEndpoints.searchPlaces);
 
-type FetchPlacesFunction = (params: inputParams) => Promise<FoursquarePlace[]>;
+const appView = AppView({
+  onSearch: (latitude: string, longitude: string) =>
+    locationSearch.search(latitude, longitude),
+});
 
-async function getMostProbableLocation(
-  params: inputParams,
-  fetchData: FetchPlacesFunction,
-) {
-  try {
-    const rawPlaces = await fetchData(params);
-
-    if (rawPlaces.length === 0) {
-      console.log("No locations were found nearby.");
-      return null;
-    }
-
-    const enrichedPlaces = rawPlaces.map((rawPlace) =>
-      enrichWithMockData(rawPlace),
-    );
-
-    return findWinnerLocation(enrichedPlaces);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
-getMostProbableLocation({ lat: "49.843949", long: "24.026219" }, searchPlaces);
+appView.observers.forEach((observer) => locationSearch.subscribe(observer));
+appContainer.replaceChildren(...appView.elements);

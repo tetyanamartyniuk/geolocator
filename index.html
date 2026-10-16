@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Geolocator</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 480px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .form-title {
+        margin: 0;
+      }
+      .form-control {
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+
+      .btn {
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: #0a7a31;
+        color: white;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+
+      .result-container {
+        margin-top: 24px;
+      }
+      .result {
+        padding: 12px;
+        border-radius: 6px;
+      }
+      .result--loading {
+        color: #555;
+      }
+      .result--empty {
+        background: #f3f4f6;
+      }
+      .result--error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .place-card {
+        border: 1px solid #c3f6e3;
+      }
+      .place-card h3 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>

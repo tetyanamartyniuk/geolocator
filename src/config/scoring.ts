@@ -1,1 +1,0 @@
-export const DISTANCE_NORMALIZER = 100;
